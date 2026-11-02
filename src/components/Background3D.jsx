@@ -154,19 +154,37 @@ export default function Background3D() {
       textureLoader.load('/cat.png'),      // Classic serene
     ];
 
-    // 4 dedicated peripheral sectors (keeping the center reading area clear)
-    const sectors = [
-      { minX: 380, maxX: 680, minY: 160, maxY: 380 },   // Top-Right
-      { minX: -680, maxX: -380, minY: -360, maxY: -160 }, // Bottom-Left
-      { minX: 380, maxX: 680, minY: -360, maxY: -160 },  // Bottom-Right
-      { minX: -680, maxX: -380, minY: 160, maxY: 380 },   // Top-Left
-    ];
+    // Dynamically calculate peripheral sectors based on screen aspect ratio
+    function calculateSectors() {
+      const fovRad = (camera.fov * Math.PI) / 180;
+      const distance = 400 - (-200); // 600
+      const visibleHeight = 2 * Math.tan(fovRad / 2) * distance;
+      const visibleWidth = visibleHeight * (window.innerWidth / window.innerHeight);
+      const isMobile = window.innerWidth <= 768;
+
+      // On mobile (narrow portrait), place in inner-periphery so they're clearly visible
+      // On desktop (widescreen), place in outer periphery
+      const minXFrac = isMobile ? 0.16 : 0.23;
+      const maxXFrac = isMobile ? 0.40 : 0.43;
+
+      const minY = isMobile ? 140 : 160;
+      const maxY = isMobile ? 360 : 380;
+
+      return [
+        { minX: visibleWidth * minXFrac, maxX: visibleWidth * maxXFrac, minY: minY, maxY: maxY },     // Top-Right
+        { minX: -visibleWidth * maxXFrac, maxX: -visibleWidth * minXFrac, minY: -maxY, maxY: -minY }, // Bottom-Left
+        { minX: visibleWidth * minXFrac, maxX: visibleWidth * maxXFrac, minY: -maxY, maxY: -minY },  // Bottom-Right
+        { minX: -visibleWidth * maxXFrac, maxX: -visibleWidth * minXFrac, minY: minY, maxY: maxY },   // Top-Left
+      ];
+    }
+
+    let sectors = calculateSectors();
 
     function getSectorPosition(sectorIndex) {
       const sec = sectors[sectorIndex % sectors.length];
       const x = sec.minX + Math.random() * (sec.maxX - sec.minX);
       const y = sec.minY + Math.random() * (sec.maxY - sec.minY);
-      const z = -200 - Math.random() * 250;
+      const z = -200 - Math.random() * 200;
       return { x, y, z };
     }
 
@@ -175,11 +193,15 @@ export default function Background3D() {
     // 1: "Christ" (Bottom-Left)
     // 2: Cat "Winking" (Bottom-Right)
     // 3: "Noble" (Top-Left)
+    const isMobileInitial = window.innerWidth <= 768;
+    const catInitialScale = isMobileInitial ? 100 : 135;
+    const textInitialScale = isMobileInitial ? 140 : 200;
+
     const itemsConfig = [
-      { isText: false, text: '', scale: 135, sector: 0, phase: 0, catIndex: 0 },
-      { isText: true, text: 'Christ', scale: 200, sector: 1, phase: 4, catIndex: -1 },
-      { isText: false, text: '', scale: 135, sector: 2, phase: 8, catIndex: 1 },
-      { isText: true, text: 'Noble', scale: 200, sector: 3, phase: 12, catIndex: -1 },
+      { isText: false, text: '', scale: catInitialScale, sector: 0, phase: 0, catIndex: 0 },
+      { isText: true, text: 'Christ', scale: textInitialScale, sector: 1, phase: 4, catIndex: -1 },
+      { isText: false, text: '', scale: catInitialScale, sector: 2, phase: 8, catIndex: 1 },
+      { isText: true, text: 'Noble', scale: textInitialScale, sector: 3, phase: 12, catIndex: -1 },
     ];
 
     const totalPeriod = 16;
@@ -309,7 +331,7 @@ export default function Background3D() {
           // Smooth sine fade curve
           const progress = timeInCycle / glowDuration;
           const fadeAlpha = Math.sin(progress * Math.PI);
-          item.material.opacity = fadeAlpha * 0.75;
+          item.material.opacity = fadeAlpha * 0.85;
 
           // Gentle cosmic drift
           item.sprite.position.x = item.baseX + Math.cos(elapsedTime * 0.8 + item.phase) * 15;
@@ -351,6 +373,12 @@ export default function Background3D() {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+
+      sectors = calculateSectors();
+      const isMobile = window.innerWidth <= 768;
+      floatingElements.forEach((item) => {
+        item.baseScale = item.isText ? (isMobile ? 140 : 200) : (isMobile ? 100 : 135);
+      });
     };
 
     window.addEventListener('resize', handleResize);

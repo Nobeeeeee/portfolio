@@ -930,7 +930,12 @@ h1 {
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     -ms-overflow-style: none;
-    scrollbar-width: none;
+  }
+
+  @supports (scrollbar-width: none) {
+    .project-grid {
+      scrollbar-width: none;
+    }
   }
 
   .project-grid::-webkit-scrollbar {
