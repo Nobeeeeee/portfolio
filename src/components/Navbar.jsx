@@ -1,7 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // Keep header visible if mobile menu is open
+      if (mobileMenuOpen) {
+        setVisible(true);
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+
+      // If at or near top of the page, always show header
+      if (currentScrollY <= 40) {
+        setVisible(true);
+        lastScrollY.current = Math.max(0, currentScrollY);
+        return;
+      }
+
+      // Prevent bottom-of-page bounce flicker
+      const scrollHeight = document.documentElement.scrollHeight;
+      const clientHeight = window.innerHeight;
+      if (currentScrollY + clientHeight >= scrollHeight - 30) {
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+
+      const diff = currentScrollY - lastScrollY.current;
+
+      // Threshold buffer of 8px to prevent micro-jitter
+      if (diff > 8) {
+        // Scrolling DOWN -> smoothly hide header
+        setVisible(false);
+      } else if (diff < -8) {
+        // Scrolling UP -> smoothly reveal header
+        setVisible(true);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [mobileMenuOpen]);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen((prev) => !prev);
@@ -12,7 +58,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav>
+    <nav className={`navbar ${visible ? 'nav-visible' : 'nav-hidden'}`}>
       <a href="#home" style={{ textDecoration: 'none', color: 'inherit' }}>
         <div className="logo">
           CN<span className="dot">.</span>

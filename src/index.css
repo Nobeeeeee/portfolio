@@ -98,6 +98,7 @@ body {
 nav {
   position: fixed;
   top: 0;
+  left: 0;
   width: 100%;
   padding: 2rem 5%;
   display: flex;
@@ -105,6 +106,19 @@ nav {
   align-items: center;
   z-index: 100;
   background: transparent;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
+  will-change: transform;
+  transform: translateY(0);
+}
+
+nav.nav-hidden {
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+
+nav.nav-visible {
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .logo {
