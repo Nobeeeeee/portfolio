@@ -56,6 +56,7 @@ export default function Projects() {
       };
 
       const handleMouseMove = (e) => {
+        if (window.innerWidth <= 768) return;
         const rect = card.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -101,9 +102,17 @@ export default function Projects() {
       };
     });
 
-    // 3D Scroll effect
+    // 3D Scroll effect (desktop only, flat on mobile)
     let animId;
     const updateScroll3D = () => {
+      if (window.innerWidth <= 768) {
+        cards.forEach((card) => {
+          card.style.transform = 'none';
+        });
+        animId = requestAnimationFrame(updateScroll3D);
+        return;
+      }
+
       const windowWidth = window.innerWidth;
       const windowCenter = windowWidth / 2;
 
