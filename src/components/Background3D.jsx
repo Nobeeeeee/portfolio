@@ -143,59 +143,96 @@ export default function Background3D() {
       return new THREE.CanvasTexture(canvas);
     }
 
-    const textureLoader = new THREE.TextureLoader();
-    const catTexture = textureLoader.load('/cat.png');
     const floatingElements = [];
+    const textureLoader = new THREE.TextureLoader();
 
-    // Create Name Sprites
-    const names = ['Christ', 'Noble', 'Christ', 'Noble'];
-    names.forEach((name) => {
-      const texture = createTextTexture(name);
-      const material = new THREE.SpriteMaterial({
-        map: texture,
-        color: 0x00f0ff,
-        transparent: true,
-        opacity: 0,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      });
+    // Load celestial cat constellation expressions
+    const catTextures = [
+      textureLoader.load('/cat-hi.png'),   // Saying Hi (Waving paw)
+      textureLoader.load('/cat-wink.png'), // Winking / Cheerful
+      textureLoader.load('/cat-play.png'), // Cosmic star play
+      textureLoader.load('/cat.png'),      // Classic serene
+    ];
+
+    // 4 dedicated peripheral sectors (keeping the center reading area clear)
+    const sectors = [
+      { minX: 380, maxX: 680, minY: 160, maxY: 380 },   // Top-Right
+      { minX: -680, maxX: -380, minY: -360, maxY: -160 }, // Bottom-Left
+      { minX: 380, maxX: 680, minY: -360, maxY: -160 },  // Bottom-Right
+      { minX: -680, maxX: -380, minY: 160, maxY: 380 },   // Top-Left
+    ];
+
+    function getSectorPosition(sectorIndex) {
+      const sec = sectors[sectorIndex % sectors.length];
+      const x = sec.minX + Math.random() * (sec.maxX - sec.minX);
+      const y = sec.minY + Math.random() * (sec.maxY - sec.minY);
+      const z = -200 - Math.random() * 250;
+      return { x, y, z };
+    }
+
+    // 4 Celestial Elements (staggered in time & spaced apart in sectors):
+    // 0: Cat "Saying Hi" (Top-Right)
+    // 1: "Christ" (Bottom-Left)
+    // 2: Cat "Winking" (Bottom-Right)
+    // 3: "Noble" (Top-Left)
+    const itemsConfig = [
+      { isText: false, text: '', scale: 135, sector: 0, phase: 0, catIndex: 0 },
+      { isText: true, text: 'Christ', scale: 200, sector: 1, phase: 4, catIndex: -1 },
+      { isText: false, text: '', scale: 135, sector: 2, phase: 8, catIndex: 1 },
+      { isText: true, text: 'Noble', scale: 200, sector: 3, phase: 12, catIndex: -1 },
+    ];
+
+    const totalPeriod = 16;
+    const glowDuration = 3.6;
+
+    itemsConfig.forEach((cfg) => {
+      let material;
+      if (cfg.isText) {
+        const texture = createTextTexture(cfg.text);
+        material = new THREE.SpriteMaterial({
+          map: texture,
+          color: 0x00f0ff,
+          transparent: true,
+          opacity: 0,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        });
+      } else {
+        material = new THREE.SpriteMaterial({
+          map: catTextures[cfg.catIndex],
+          color: 0x00f0ff,
+          transparent: true,
+          opacity: 0,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        });
+      }
+
       const sprite = new THREE.Sprite(material);
-      const scale = 150 + Math.random() * 100;
-      sprite.scale.set(scale, scale / 2, 1);
+      if (cfg.isText) {
+        sprite.scale.set(cfg.scale, cfg.scale / 2, 1);
+      } else {
+        sprite.scale.set(cfg.scale, cfg.scale, 1);
+      }
+
+      const initialPos = getSectorPosition(cfg.sector);
+      sprite.position.set(initialPos.x, initialPos.y, initialPos.z);
       scene.add(sprite);
+
       floatingElements.push({
         sprite,
         material,
-        period: 6 + Math.random() * 6,
-        offset: Math.random() * 10,
-        baseScale: scale,
-        isText: true,
+        baseX: initialPos.x,
+        baseY: initialPos.y,
+        baseZ: initialPos.z,
+        baseScale: cfg.scale,
+        isText: cfg.isText,
+        sector: cfg.sector,
+        phase: cfg.phase,
+        catIndex: cfg.catIndex,
+        hasRespawned: false,
       });
     });
-
-    // Create Cat Sprites
-    for (let i = 0; i < 4; i++) {
-      const material = new THREE.SpriteMaterial({
-        map: catTexture,
-        color: 0x00f0ff,
-        transparent: true,
-        opacity: 0,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      });
-      const sprite = new THREE.Sprite(material);
-      const scale = 80 + Math.random() * 80;
-      sprite.scale.set(scale, scale, 1);
-      scene.add(sprite);
-      floatingElements.push({
-        sprite,
-        material,
-        period: 8 + Math.random() * 10,
-        offset: Math.random() * 10,
-        baseScale: scale,
-        isText: false,
-      });
-    }
 
     // Animation Loop & Interaction
     let mouseX = 0;
@@ -263,21 +300,22 @@ export default function Background3D() {
       camera.position.y += (-targetY - (scrollY * 0.08) - camera.position.y) * 0.05;
       camera.lookAt(scene.position);
 
-      // Floating Elements (Names & Cat heads)
+      // Floating Elements: only one gracefully appears at a time in its own peripheral sector
       floatingElements.forEach((item) => {
-        const timeInPeriod = (elapsedTime + item.offset) % item.period;
-        const glowDuration = 4;
-        const threshold = item.period - glowDuration;
+        const timeInCycle = (elapsedTime + item.phase) % totalPeriod;
 
-        if (timeInPeriod > threshold) {
-          const fadeProgress = (timeInPeriod - threshold) / glowDuration;
-          item.material.opacity = Math.sin(fadeProgress * Math.PI) * 0.7;
+        if (timeInCycle < glowDuration) {
+          item.hasRespawned = false;
+          // Smooth sine fade curve
+          const progress = timeInCycle / glowDuration;
+          const fadeAlpha = Math.sin(progress * Math.PI);
+          item.material.opacity = fadeAlpha * 0.75;
 
-          // Gentle floating movement
-          item.sprite.position.y += Math.sin(elapsedTime * 1.5 + item.offset) * 0.15;
-          item.sprite.position.x += Math.cos(elapsedTime * 0.5 + item.offset) * 0.1;
+          // Gentle cosmic drift
+          item.sprite.position.x = item.baseX + Math.cos(elapsedTime * 0.8 + item.phase) * 15;
+          item.sprite.position.y = item.baseY + Math.sin(elapsedTime * 1.2 + item.phase) * 15;
 
-          const pulse = 1 + Math.sin(fadeProgress * Math.PI) * 0.1;
+          const pulse = 1 + Math.sin(progress * Math.PI) * 0.08;
           if (item.isText) {
             item.sprite.scale.set(item.baseScale * pulse, (item.baseScale / 2) * pulse, 1);
           } else {
@@ -285,10 +323,21 @@ export default function Background3D() {
           }
         } else {
           item.material.opacity = 0;
-          if (timeInPeriod < 0.1) {
-            item.sprite.position.x = camera.position.x + (Math.random() - 0.5) * 1200;
-            item.sprite.position.y = camera.position.y + (Math.random() - 0.5) * 800;
-            item.sprite.position.z = camera.position.z - 100 - Math.random() * 500;
+          // When hidden, pick a new position within its own sector once per cycle
+          if (!item.hasRespawned) {
+            item.hasRespawned = true;
+            const newPos = getSectorPosition(item.sector);
+            item.baseX = newPos.x;
+            item.baseY = newPos.y;
+            item.baseZ = newPos.z;
+            item.sprite.position.set(newPos.x, newPos.y, newPos.z);
+
+            // Alternate through celestial cat constellation expressions
+            if (!item.isText && item.catIndex >= 0) {
+              item.catIndex = (item.catIndex + 2) % catTextures.length;
+              item.material.map = catTextures[item.catIndex];
+              item.material.needsUpdate = true;
+            }
           }
         }
       });
@@ -320,6 +369,7 @@ export default function Background3D() {
       starGeometry.dispose();
       starMaterial.dispose();
       starTexture.dispose();
+      catTextures.forEach((tex) => tex.dispose());
       renderer.dispose();
     };
   }, []);
