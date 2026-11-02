@@ -759,8 +759,8 @@ h1 {
   nav {
     padding: 1.25rem 5%;
     background: transparent !important;
-    backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
     border-bottom: none !important;
     box-shadow: none !important;
   }
@@ -805,7 +805,7 @@ h1 {
   }
 
   section {
-    min-height: auto;
+    min-height: 0;
     padding: 3.5rem 0;
   }
 
@@ -813,7 +813,7 @@ h1 {
   #home {
     padding-top: 6.5rem !important;
     padding-bottom: 2.5rem !important;
-    min-height: auto;
+    min-height: 0;
   }
 
   /* Typography */
@@ -929,12 +929,14 @@ h1 {
     overflow-x: auto;
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: none;
     scrollbar-width: none;
   }
 
   .project-grid::-webkit-scrollbar {
     display: none;
+    width: 0;
+    height: 0;
   }
 
   .project-wrapper {
