@@ -41,6 +41,9 @@ div {
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 body {
@@ -48,6 +51,8 @@ body {
   color: var(--text-primary);
   font-family: var(--font-main);
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
   line-height: 1.6;
   -webkit-user-select: none;
   user-select: none;
@@ -493,15 +498,6 @@ h1 {
   scroll-snap-align: center;
 }
 
-@media (max-width: 600px) {
-  .project-wrapper {
-    flex: 0 0 85vw;
-  }
-  .project-grid {
-    padding: 3rem 7.5vw;
-  }
-}
-
 .project-card {
   padding: 1.5rem;
   display: flex;
@@ -773,6 +769,11 @@ h1 {
     display: flex;
   }
 
+  .cat-menu-toggle {
+    margin-right: 4px;
+    padding: 2px;
+  }
+
   .nav-links {
     position: fixed;
     top: 0;
@@ -806,6 +807,13 @@ h1 {
   section {
     min-height: auto;
     padding: 3.5rem 0;
+  }
+
+  section.hero,
+  #home {
+    padding-top: 6.5rem !important;
+    padding-bottom: 2.5rem !important;
+    min-height: auto;
   }
 
   /* Typography */
@@ -843,15 +851,22 @@ h1 {
     background: rgba(255, 255, 255, 0.06);
   }
 
-  /* Make all card boxes completely transparent on mobile */
+  /* Make all card boxes completely transparent on mobile & remove 3D overflow clipping */
   .glass-card,
   .project-card,
   .contact-card {
-    padding: 1.25rem 0;
+    padding: 1.25rem 0.5rem;
     border-radius: 0;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
+    overflow: visible !important;
+    perspective: none !important;
+    transform: none !important;
+  }
+
+  .card-content {
+    transform: none !important;
   }
 
   .card-glow {
@@ -878,9 +893,16 @@ h1 {
     background: transparent !important;
   }
 
+  .about-text {
+    width: 100%;
+    padding: 0 0.25rem;
+  }
+
   .dummy-text {
     font-size: 0.95rem;
     margin-bottom: 1.5rem;
+    line-height: 1.65;
+    word-break: break-word;
   }
 
   .skills {
@@ -892,26 +914,46 @@ h1 {
     font-size: 0.82rem;
   }
 
-  /* Featured Projects Section: Completely transparent & flat */
+  /* Featured Projects Section: Smooth Horizontal Scroll without Document Overflow */
   .project-grid {
-    padding: 1rem 7.5vw 2.5rem 7.5vw;
-    gap: 1.5rem;
-    width: 100vw;
-    margin-left: -50vw;
-    margin-right: -50vw;
+    position: relative;
+    left: auto;
+    right: auto;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 1rem 0 2rem 0;
+    gap: 1.25rem;
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .project-grid::-webkit-scrollbar {
+    display: none;
   }
 
   .project-wrapper {
-    flex: 0 0 85vw;
-    max-width: 360px;
+    flex: 0 0 88%;
+    min-width: 88%;
+    max-width: 88%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    perspective: none;
   }
 
   .project-card {
-    padding: 0.5rem 0;
+    padding: 0.5rem 0.25rem;
     gap: 1rem;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
+    transform: none !important;
+    width: 100%;
   }
 
   .project-card:hover,
@@ -922,18 +964,35 @@ h1 {
   }
 
   .project-img {
+    width: 100%;
     height: auto;
     aspect-ratio: 16 / 9;
     border-radius: 14px;
+    transform: none !important;
+  }
+
+  .project-info {
+    transform: none !important;
+    padding: 0 0.25rem;
   }
 
   .project-info h3 {
-    font-size: 1.25rem;
+    font-size: 1.3rem;
+    word-break: break-word;
   }
 
   .project-info p {
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     margin-bottom: 1rem;
+    word-break: break-word;
+    line-height: 1.5;
+  }
+
+  .project-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
   }
 
   /* Contact Section: Completely transparent */

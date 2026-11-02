@@ -143,10 +143,10 @@ export default function Projects() {
 
     animId = requestAnimationFrame(updateScroll3D);
 
-    // PC Horizontal Scroll wheel listener
+    // PC Horizontal Scroll wheel listener (desktop only)
     let isWheelScrolling = false;
     const handleWheel = (e) => {
-      if (!grid) return;
+      if (!grid || window.innerWidth <= 768) return;
       if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
         const maxScrollLeft = grid.scrollWidth - grid.clientWidth;
 
