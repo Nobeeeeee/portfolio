@@ -824,16 +824,19 @@ h1 {
     background: rgba(255, 255, 255, 0.06);
   }
 
-  /* Glass Cards: Reduced padding so photos have breathing room */
-  .glass-card {
-    padding: 1.25rem;
-    border-radius: 20px;
-    background: rgba(18, 22, 28, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+  /* Make all card boxes completely transparent on mobile */
+  .glass-card,
+  .project-card,
+  .contact-card {
+    padding: 1.25rem 0;
+    border-radius: 0;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   .card-glow {
-    display: none; /* Hide static touch glow */
+    display: none !important; /* Hide touch glow */
   }
 
   /* About Section Proportions & Alignment */
@@ -851,6 +854,9 @@ h1 {
   .profile-img-container {
     aspect-ratio: 4 / 4.6;
     border-radius: 16px;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
   }
 
   .dummy-text {
@@ -867,10 +873,10 @@ h1 {
     font-size: 0.82rem;
   }
 
-  /* Featured Projects Section: Flat & Widescreen 16:9 */
+  /* Featured Projects Section: Completely transparent & flat */
   .project-grid {
     padding: 1rem 7.5vw 2.5rem 7.5vw;
-    gap: 1.25rem;
+    gap: 1.5rem;
     width: 100vw;
     margin-left: -50vw;
     margin-right: -50vw;
@@ -882,8 +888,18 @@ h1 {
   }
 
   .project-card {
-    padding: 1.25rem;
+    padding: 0.5rem 0;
     gap: 1rem;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .project-card:hover,
+  .project-card.omni-card:hover,
+  .project-card.agri-card:hover {
+    border-color: transparent !important;
+    box-shadow: none !important;
   }
 
   .project-img {
@@ -901,9 +917,12 @@ h1 {
     margin-bottom: 1rem;
   }
 
-  /* Contact Section */
+  /* Contact Section: Completely transparent */
   .contact-card {
-    padding: 2.5rem 1.25rem;
+    padding: 2rem 0;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
   .contact-heading {
     font-size: 2.2rem;
@@ -924,9 +943,9 @@ h1 {
     gap: 0.75rem;
   }
   .minimal-social {
-    padding: 0.5rem 1.25rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 0.5rem 1rem;
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 20px;
     font-size: 0.85rem;
     letter-spacing: 1px;
