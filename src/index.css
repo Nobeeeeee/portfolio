@@ -715,12 +715,14 @@ h1 {
   transition-delay: 0.2s;
 }
 
-/* Responsive & Touch Screen Adaptations */
+/* Responsive & Mobile Layout */
 @media (hover: none) and (pointer: coarse), (max-width: 768px) {
+  /* Hide custom cursor on mobile / touch devices */
   .cursor-dot,
   .cursor-outline {
     display: none !important;
   }
+  
   *,
   *::before,
   *::after,
@@ -733,20 +735,18 @@ h1 {
   h1,
   h2,
   h3,
-  h4,
-  h5,
-  h6,
   div {
     cursor: auto !important;
   }
 }
 
 @media (max-width: 768px) {
+  /* Frosted Glass Navbar on Mobile */
   nav {
-    padding: 1.2rem 5%;
-    background: rgba(5, 5, 5, 0.85);
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
+    padding: 1rem 5%;
+    background: rgba(5, 5, 5, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
   
@@ -785,180 +785,154 @@ h1 {
   }
 
   section {
-    min-height: 0;
+    min-height: auto;
     padding: 3.5rem 0;
   }
 
+  /* Typography */
   .section-title {
     font-size: 2.1rem;
-    margin-bottom: 1.5rem;
-    text-align: center;
+    margin-bottom: 1.25rem;
+    line-height: 1.2;
   }
 
+  /* Hero Section */
+  h1 {
+    font-size: clamp(2.5rem, 8vw, 3.2rem);
+  }
+  .role {
+    font-size: 1.35rem;
+    margin-bottom: 1.25rem;
+  }
+  .desc {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  .cta-group {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    width: 100%;
+  }
+  .btn {
+    padding: 0.85rem 1.6rem;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+  .btn.secondary {
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  /* Glass Cards: Reduced padding so photos have breathing room */
   .glass-card {
     padding: 1.25rem;
     border-radius: 20px;
-    transform: none !important;
+    background: rgba(18, 22, 28, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .card-glow {
-    display: none !important;
+    display: none; /* Hide static touch glow */
   }
 
-  /* Hero on Mobile */
-  h1 {
-    font-size: 2.8rem;
-    line-height: 1.15;
-  }
-
-  .role {
-    font-size: 1.4rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .desc {
-    font-size: 1.05rem;
-    margin-bottom: 2rem;
-  }
-
-  .cta-group {
-    flex-direction: column;
-    width: 100%;
-    gap: 1rem;
-    align-items: stretch;
-  }
-
-  .btn {
-    width: 100%;
-    text-align: center;
-    padding: 0.9rem 1.5rem;
-  }
-
-  .btn.secondary {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
-  /* About on Mobile */
+  /* About Section Proportions & Alignment */
   .about-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
-    text-align: center;
   }
 
   .about-image-wrapper {
     order: -1;
-    max-width: 240px;
+    max-width: 220px;
     margin: 0 auto;
   }
 
   .profile-img-container {
-    width: 100%;
-    max-width: 240px;
-    aspect-ratio: 4 / 5;
-    border-radius: 18px;
-    margin: 0 auto;
-    transform: none !important;
-  }
-
-  .about-text .section-title {
-    text-align: center;
-    margin-bottom: 1rem;
+    aspect-ratio: 4 / 4.6;
+    border-radius: 16px;
   }
 
   .dummy-text {
-    text-align: center;
-    font-size: 1rem;
-    line-height: 1.6;
+    font-size: 0.95rem;
     margin-bottom: 1.5rem;
   }
 
   .skills {
-    justify-content: center;
-    gap: 0.6rem;
-    transform: none !important;
+    gap: 0.5rem;
   }
 
   .skill-tag {
-    padding: 0.4rem 1.1rem;
-    font-size: 0.85rem;
+    padding: 0.4rem 1rem;
+    font-size: 0.82rem;
   }
 
-  /* Projects on Mobile */
+  /* Featured Projects Section: Flat & Widescreen 16:9 */
   .project-grid {
-    padding: 1.5rem calc(50vw - 165px);
-    gap: 1.5rem;
+    padding: 1rem 7.5vw 2.5rem 7.5vw;
+    gap: 1.25rem;
     width: 100vw;
     margin-left: -50vw;
     margin-right: -50vw;
   }
 
   .project-wrapper {
-    flex: 0 0 330px;
-    max-width: 86vw;
+    flex: 0 0 85vw;
+    max-width: 360px;
   }
 
   .project-card {
     padding: 1.25rem;
     gap: 1rem;
-    transform: none !important;
   }
 
   .project-img {
-    height: 180px;
+    height: auto;
+    aspect-ratio: 16 / 9;
     border-radius: 14px;
-    transform: none !important;
-  }
-
-  .project-info {
-    transform: none !important;
   }
 
   .project-info h3 {
-    font-size: 1.3rem;
-    margin-bottom: 0.4rem;
+    font-size: 1.25rem;
   }
 
   .project-info p {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     margin-bottom: 1rem;
   }
 
-  /* Contact on Mobile */
+  /* Contact Section */
   .contact-card {
     padding: 2.5rem 1.25rem;
   }
-
   .contact-heading {
-    font-size: 2.1rem;
-    margin-bottom: 0.5rem;
+    font-size: 2.2rem;
   }
-
   .contact-sub {
     font-size: 1rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.75rem;
   }
-
   .mega-email {
-    font-size: clamp(1.2rem, 5.5vw, 1.8rem);
+    font-size: clamp(1.2rem, 5vw, 1.8rem);
     margin-bottom: 2.5rem;
     word-break: break-all;
   }
-
-  .social-links-row {
-    gap: 0.8rem;
-  }
-
   .separator {
     display: none;
   }
-
+  .social-links-row {
+    gap: 0.75rem;
+  }
   .minimal-social {
-    font-size: 0.9rem;
-    padding: 0.4rem 0.9rem;
+    padding: 0.5rem 1.25rem;
     background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+  }
+  .minimal-social::after {
+    display: none;
   }
 
   /* Hamburger to X Animation */
